@@ -63,6 +63,10 @@ If you are using a different operating system, you can try searching for instruc
 
 I hope this helps!
 
+## Testing
+
+To test the script, you can try to decrypt the file Test-File-Password-is-000011.pdf . The password for this file is '000011'. So to test it, run the script and enter 6 when asked for the number of digits.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
