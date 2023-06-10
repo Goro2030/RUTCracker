@@ -50,6 +50,19 @@ You can install the necessary libraries with pip:
 pip install -r requirements.txt
 ```
 
+If after installing the requirements, the program won't run with an error --> modulenotfounderror: no module named 'tkinter'
+
+The error “No matching distribution found for tkinter” usually occurs when you are trying to install tkinter using pip on a system where tkinter is not installed or is not supported.
+
+To resolve this issue, you can try installing tkinter using your system’s package manager. For example, on Ubuntu, you can run the following command:
+
+```
+sudo apt-get install python3-tk
+```
+If you are using a different operating system, you can try searching for instructions on how to install tkinter on your system.
+
+I hope this helps!
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

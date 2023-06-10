@@ -1,2 +1,3 @@
 PyPDF2==1.26.0
-tkinter
+tk==0.1.0
+
