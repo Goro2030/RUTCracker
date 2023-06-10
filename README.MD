@@ -50,6 +50,18 @@ You can install the necessary libraries with pip:
 pip install -r requirements.txt
 ```
 
+If PyPDF2 doesn't work for you ( i.e. on Windows 11 with Python 3.1 it have been reported not to work ok), just replace PyPDF2 with pypdf==3.9.1 in the requirements file and run the requirements install again. Then modify the python script:
+
+Where it says:
+```
+from PyPDF2 import PdfReader, PdfWriter
+```
+
+Change it to:
+```
+from pypdf import PdfReader, PdfWriter
+```
+
 If after installing the requirements, the program won't run with an error --> modulenotfounderror: no module named 'tkinter'
 
 The error “No matching distribution found for tkinter” usually occurs when you are trying to install tkinter using pip on a system where tkinter is not installed or is not supported.
