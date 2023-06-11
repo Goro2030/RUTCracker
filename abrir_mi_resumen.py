@@ -1,7 +1,11 @@
 import itertools
+import warnings
 from tkinter import Tk
 from tkinter import filedialog
-from PyPDF2 import PdfReader, PdfWriter
+
+warnings.filterwarnings("ignore", category=UserWarning)  #Supresses the warning for UserWarning: pypdf only implements RC4 encryption so far
+
+from pypdf import PdfReader, PdfWriter
 
 def intro_message():
     message = """
@@ -47,6 +51,7 @@ def change_password(pdf_file, old_password, new_password):
             pdf_writer.write(f)
 
 intro_message()
+
 pdf_file = select_file()
 
 try:
