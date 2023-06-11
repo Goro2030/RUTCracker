@@ -1,11 +1,13 @@
 import itertools
 import warnings
+import os
 from tkinter import Tk
 from tkinter import filedialog
-
-warnings.filterwarnings("ignore", category=UserWarning)  #Supresses the warning for UserWarning: pypdf only implements RC4 encryption so far
-
 from pypdf import PdfReader, PdfWriter
+
+warnings.filterwarnings("ignore", category=UserWarning) 
+"""Supresses the warning for UserWarning: pypdf only implements RC4 encryption so far"""
+
 
 def intro_message():
     message = """
@@ -29,7 +31,12 @@ def select_file():
 
 def guess_password(pdf_file, digits):
     numbers = '0123456789'
-    pdf = PdfReader(pdf_file)
+    if os.path.exists(pdf_file):
+        pdf = PdfReader(pdf_file)
+    else:
+        print(f"The file {pdf_file} does not exist.")
+        return None
+    
     if pdf.is_encrypted:
         for password_tuple in itertools.product(numbers, repeat=digits):
             password = ''.join(password_tuple)
@@ -54,16 +61,17 @@ intro_message()
 
 pdf_file = select_file()
 
-try:
-    digits = int(input("Ingrese la longitud de la contraseña (Dale enter para usar '4 números' por defecto): "))
-except ValueError:
-    digits = 4
+if pdf_file is not "":
+    try:
+        digits = int(input("Ingrese la longitud de la contraseña (Dale enter para usar '4 números' por defecto): "))
+    except ValueError:
+        digits = 4
 
-old_password = guess_password(pdf_file, digits)
+    old_password = guess_password(pdf_file, digits)
 
-if old_password is not None:
-    print("Contraseña encontrada: ", old_password)
-    change_password(pdf_file, old_password, '0000')
-    print("La contraseña ha sido cambiada a '0000' y el archivo ha sido grabado como 'unprotected.pdf'")
-else:
-    print("Contraseña no encontrada")
+    if old_password is not None:
+        print("Contraseña encontrada: ", old_password)
+        change_password(pdf_file, old_password, '0000')
+        print("La contraseña ha sido cambiada a '0000' y el archivo ha sido grabado como 'unprotected.pdf'")
+    else:
+        print("Contraseña no encontrada")
