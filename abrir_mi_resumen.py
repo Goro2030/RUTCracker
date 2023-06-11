@@ -68,10 +68,10 @@ intro_message()
 
 pdf_file = select_file()
 
-if pdf_file is not "":
+if pdf_file != "":
     try:
-        digits = int(input("Ingrese la longitud de la \
-                           contraseña (Dale enter para usar '4 números' por defecto): "))
+        digits = int(input("Ingrese la longitud de la "\
+        "contraseña (Dale enter para usar '4 números' por defecto): "))
     except ValueError:
         digits = 4
 
@@ -80,7 +80,7 @@ if pdf_file is not "":
     if old_password is not None:
         print("Contraseña encontrada: ", old_password)
         change_password(pdf_file, old_password, '0000')
-        print("La contraseña ha sido cambiada a '0000' y el \
-              archivo ha sido grabado como 'unprotected.pdf'")
+        print("La contraseña ha sido cambiada a '0000' y el "\
+        "archivo ha sido grabado como 'unprotected.pdf'")
     else:
         print("Contraseña no encontrada")
