@@ -38,6 +38,9 @@ def select_file():
 
 def guess_password(pdf_file, digits):
     numbers = '0123456789'
+    total_combinations = len(numbers) ** digits
+    progress = 0
+
     if os.path.exists(pdf_file):
         pdf = PdfReader(pdf_file)
     else:
@@ -46,12 +49,18 @@ def guess_password(pdf_file, digits):
 
     if pdf.is_encrypted:
         for password_tuple in itertools.product(numbers, repeat=digits):
+            # Print progress bar
+            progress += 1
+            print("\rProgress: [{0:50s}] {1:.1f}%".format('#' * int(progress * 50 / total_combinations), progress * 100 / total_combinations), end="", flush=True)
+
             password = ''.join(password_tuple)
             try:
                 if pdf.decrypt(password):
+                    print()  # Ensure we start on a new line for the next print
                     return password
             except:
                 continue
+    print()  # Ensure we start on a new line for the next print
     return None
 
 def change_password(pdf_file, old_password, new_password):
@@ -61,8 +70,8 @@ def change_password(pdf_file, old_password, new_password):
         for page in pdf.pages:
             pdf_writer.add_page(page)
         pdf_writer.encrypt(new_password)
-        with open('unprotected.pdf', 'wb') as f:
-            pdf_writer.write(f)
+        with open('unprotected.pdf', 'wb') as output_file:
+            pdf_writer.write(output_file)
 
 intro_message()
 
