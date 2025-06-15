@@ -1,5 +1,5 @@
 """
-pdfcracker 1.0 (C) 2023
+RUTCracker 1.0 (C) 2023
 """
 
 import itertools
