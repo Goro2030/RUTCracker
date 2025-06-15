@@ -34,6 +34,7 @@ def select_file():
     root = Tk()
     root.withdraw()  # Hide the main window
     file_path = filedialog.askopenfilename()  # Show the file open dialog
+    root.destroy()  # Close the Tkinter root window
     return file_path
 
 def guess_password(pdf_file, digits):
@@ -47,19 +48,22 @@ def guess_password(pdf_file, digits):
         print(f"The file {pdf_file} does not exist.")
         return None
 
-    if pdf.is_encrypted:
-        for password_tuple in itertools.product(numbers, repeat=digits):
-            # Print progress bar
-            progress += 1
-            print("\rProgress: [{0:50s}] {1:.1f}%".format('#' * int(progress * 50 / total_combinations), progress * 100 / total_combinations), end="", flush=True)
+    if not pdf.is_encrypted:
+        print("El archivo PDF no está protegido con contraseña.")
+        return ""
 
-            password = ''.join(password_tuple)
-            try:
-                if pdf.decrypt(password):
-                    print()  # Ensure we start on a new line for the next print
-                    return password
-            except:
-                continue
+    for password_tuple in itertools.product(numbers, repeat=digits):
+        # Print progress bar
+        progress += 1
+        print("\rProgress: [{0:50s}] {1:.1f}%".format('#' * int(progress * 50 / total_combinations), progress * 100 / total_combinations), end="", flush=True)
+
+        password = ''.join(password_tuple)
+        try:
+            if pdf.decrypt(password):
+                print()  # Ensure we start on a new line for the next print
+                return password
+        except Exception:
+            continue
     print()  # Ensure we start on a new line for the next print
     return None
 
@@ -86,7 +90,9 @@ if pdf_file != "":
 
     old_password = guess_password(pdf_file, digits)
 
-    if old_password is not None:
+    if old_password == "":
+        print("El archivo no estaba protegido. No se modificó el PDF.")
+    elif old_password is not None:
         print("Contraseña encontrada: ", old_password)
         change_password(pdf_file, old_password, '0000')
         print("La contraseña ha sido cambiada a '0000' y el "\
