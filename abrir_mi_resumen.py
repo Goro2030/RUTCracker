@@ -36,7 +36,8 @@ def select_file():
     root = Tk()
     root.withdraw()  # Hide the main window
     file_path = filedialog.askopenfilename()  # Show the file open dialog
-    root.destroy()  # Close the Tkinter root window
+    # Destroy the Tk instance before returning the selected path
+    root.destroy()
     return file_path
 
 def guess_password(pdf_file, digits):
