@@ -8,9 +8,10 @@ import os
 from tkinter import Tk
 from tkinter import filedialog
 from pypdf import PdfReader, PdfWriter
+from pypdf.errors import PdfReadError
 
 warnings.filterwarnings("ignore", category=UserWarning)
-"""Supresses the warning for UserWarning: pypdf only implements RC4 encryption so far"""
+# Suppress UserWarning: pypdf only implements RC4 encryption so far
 
 
 def intro_message():
@@ -31,12 +32,15 @@ def intro_message():
     print(message)
 
 def select_file():
+    """Open a file dialog and return the chosen path."""
     root = Tk()
     root.withdraw()  # Hide the main window
     file_path = filedialog.askopenfilename()  # Show the file open dialog
+    root.destroy()  # Close the Tkinter root window
     return file_path
 
 def guess_password(pdf_file, digits):
+    """Brute-force numeric passwords for *pdf_file* of given length."""
     numbers = '0123456789'
     total_combinations = len(numbers) ** digits
     progress = 0
@@ -47,23 +51,29 @@ def guess_password(pdf_file, digits):
         print(f"The file {pdf_file} does not exist.")
         return None
 
-    if pdf.is_encrypted:
-        for password_tuple in itertools.product(numbers, repeat=digits):
-            # Print progress bar
-            progress += 1
-            print("\rProgress: [{0:50s}] {1:.1f}%".format('#' * int(progress * 50 / total_combinations), progress * 100 / total_combinations), end="", flush=True)
+    if not pdf.is_encrypted:
+        print("El archivo PDF no está protegido con contraseña.")
+        return ""
 
-            password = ''.join(password_tuple)
-            try:
-                if pdf.decrypt(password):
-                    print()  # Ensure we start on a new line for the next print
-                    return password
-            except:
-                continue
+    for password_tuple in itertools.product(numbers, repeat=digits):
+        # Print progress bar
+        progress += 1
+        bar = '#' * int(progress * 50 / total_combinations)
+        percent = progress * 100 / total_combinations
+        print(f"\rProgress: [{bar:50s}] {percent:.1f}%", end="", flush=True)
+
+        password = ''.join(password_tuple)
+        try:
+            if pdf.decrypt(password):
+                print()  # Ensure we start on a new line for the next print
+                return password
+        except PdfReadError:
+            continue
     print()  # Ensure we start on a new line for the next print
     return None
 
 def change_password(pdf_file, old_password, new_password):
+    """Write *pdf_file* encrypted with *new_password* when *old_password* works."""
     pdf = PdfReader(pdf_file)
     if pdf.decrypt(old_password):
         pdf_writer = PdfWriter()
@@ -75,21 +85,29 @@ def change_password(pdf_file, old_password, new_password):
 
 intro_message()
 
-pdf_file = select_file()
+selected_file = select_file()
 
-if pdf_file != "":
+if selected_file != "":
     try:
-        digits = int(input("Ingrese la longitud de la "\
-        "contraseña (Dale enter para usar '4 números' por defecto): "))
+        password_length = int(
+            input(
+                "Ingrese la longitud de la "
+                "contraseña (Dale enter para usar '4 números' por defecto): "
+            )
+        )
     except ValueError:
-        digits = 4
+        password_length = 4
 
-    old_password = guess_password(pdf_file, digits)
+    found_password = guess_password(selected_file, password_length)
 
-    if old_password is not None:
-        print("Contraseña encontrada: ", old_password)
-        change_password(pdf_file, old_password, '0000')
-        print("La contraseña ha sido cambiada a '0000' y el "\
-        "archivo ha sido grabado como 'unprotected.pdf'")
+    if found_password == "":
+        print("El archivo no estaba protegido. No se modificó el PDF.")
+    elif found_password is not None:
+        print("Contraseña encontrada: ", found_password)
+        change_password(selected_file, found_password, "0000")
+        print(
+            "La contraseña ha sido cambiada a '0000' y el "
+            "archivo ha sido grabado como 'unprotected.pdf'"
+        )
     else:
         print("Contraseña no encontrada")
