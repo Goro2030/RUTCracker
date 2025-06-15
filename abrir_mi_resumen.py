@@ -11,7 +11,7 @@ from pypdf import PdfReader, PdfWriter
 from pypdf.errors import PdfReadError
 
 warnings.filterwarnings("ignore", category=UserWarning)
-# Suppress UserWarning: pypdf only implements RC4 encryption so far
+"""Suppresses the warning for UserWarning: pypdf only implements RC4 encryption so far"""
 
 
 def intro_message():
